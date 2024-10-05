@@ -1,25 +1,19 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import { sequelize } from './config/db.js'
 import { SERVER_PORT } from './utils/secrets.js'
+import { router } from './routes/router.js'
 
-const PORT = SERVER_PORT || 4444
+
+const PORT = SERVER_PORT || 5000
 const app = express()
 
 app.use(express.json())
-
-
-app.post('/auth/login', (req, res) => {
-    const token = jwt.sign({
-        email: req.body.email,
-        username: req.body.username
-    }, 'secret')
-    res.json({
-        success: 'OK',
-        token
-    })
-})
-
+app.use(cookieParser())
+app.use(cors())
+app.use('/api', router)
 
 const startApp = async () => {
     try {
@@ -29,7 +23,7 @@ const startApp = async () => {
             if (err) {
                 return console.log('ERROR', err)
             }
-        
+
             console.log(`SERVER STARTED at PORT ${PORT}`)
         })
     } catch (err) {
